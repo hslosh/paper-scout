@@ -1,0 +1,5 @@
+# Normalize everyone to LF on checkout, even on Windows. This matters
+# specifically for run_scout.sh: a CRLF shebang line makes bash fail with
+# "bad interpreter" — Python and PowerShell don't care either way, so LF
+# everywhere is the simplest rule that works on every OS.
+* text=auto eol=lf

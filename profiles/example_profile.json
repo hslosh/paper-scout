@@ -1,0 +1,412 @@
+{
+  "profile_version": 1,
+  "review_status": "draft",
+  "review_note": "Example profile for a hypothetical researcher. Copy it to profiles/private/, edit it to describe your own data and past work, then run `python research_profile.py --approve`.",
+  "source_documents": {
+    "research_notes": "example_notes.md"
+  },
+  "objectives": [
+    {
+      "id": "equity_index_intraday",
+      "instruments": [
+        "NQ",
+        "ES"
+      ],
+      "target": "Intraday equity index futures mechanisms; flat by session close; long and short.",
+      "deployable_horizon": "intraday_flat_by_close",
+      "source": "research_notes"
+    },
+    {
+      "id": "crypto_perp",
+      "instruments": [
+        "BTCUSDT_PERP"
+      ],
+      "target": "Systematic strategies on Bitcoin perpetual futures.",
+      "deployable_horizon": "any",
+      "source": "research_notes"
+    }
+  ],
+  "instruments": {
+    "NQ": {
+      "asset_class": "equity_index_future",
+      "role": "primary instrument",
+      "market": "equity_index",
+      "underlying_family": "nasdaq_100"
+    },
+    "ES": {
+      "asset_class": "equity_index_future",
+      "role": "secondary instrument",
+      "market": "equity_index",
+      "underlying_family": "sp_500"
+    },
+    "BTCUSDT_PERP": {
+      "asset_class": "crypto_perpetual",
+      "role": "separate research program",
+      "market": "crypto",
+      "underlying_family": "bitcoin"
+    },
+    "CL": {
+      "asset_class": "commodity_future",
+      "role": "tick data owned but not yet validated",
+      "market": "commodities",
+      "underlying_family": "wti_crude"
+    },
+    "GC": {
+      "asset_class": "commodity_future",
+      "role": "tick data owned but not yet validated",
+      "market": "commodities",
+      "underlying_family": "gold"
+    }
+  },
+  "not_owned": {
+    "instruments": [
+      "RTY",
+      "YM",
+      "ZN",
+      "6E",
+      "any other futures contract"
+    ],
+    "data": [
+      "order_book_l2 (market-by-price / market-by-order depth)",
+      "intraday options trades/quotes",
+      "macro release surprises / consensus forecasts"
+    ],
+    "note": "Anything listed here routes papers that need it to requires_data.",
+    "source": "research_notes"
+  },
+  "datasets": [
+    {
+      "id": "nq_es_minute_bars",
+      "instrument": "NQ",
+      "serves": [
+        "ES"
+      ],
+      "fields": [
+        "ohlcv"
+      ],
+      "resolutions": [
+        "1m",
+        "5m",
+        "1h",
+        "1d"
+      ],
+      "coverage": [
+        "2012-01-01",
+        "2025-12-31"
+      ],
+      "validation": "checked against a second vendor",
+      "path": "data/futures/minute",
+      "source": "research_notes",
+      "research_usable": true
+    },
+    {
+      "id": "nq_es_ticks",
+      "instrument": "NQ",
+      "serves": [
+        "ES"
+      ],
+      "fields": [
+        "trades_tick",
+        "aggressor_side",
+        "quotes_l1",
+        "ohlcv"
+      ],
+      "resolutions": [
+        "tick",
+        "1s",
+        "1m"
+      ],
+      "coverage": [
+        "2015-01-01",
+        "2025-12-31"
+      ],
+      "validation": "spot-checked against minute bars",
+      "path": "data/futures/ticks",
+      "source": "research_notes",
+      "research_usable": true
+    },
+    {
+      "id": "nq_trades_sample",
+      "instrument": "NQ",
+      "fields": [
+        "trades_tick",
+        "aggressor_side"
+      ],
+      "resolutions": [
+        "tick"
+      ],
+      "coverage": [
+        "a few sample days"
+      ],
+      "validation": "sample only",
+      "caveat": "too small for research; kept for pipeline testing",
+      "source": "research_notes",
+      "research_usable": false
+    },
+    {
+      "id": "cl_gc_ticks",
+      "instrument": "CL",
+      "serves": [
+        "GC"
+      ],
+      "fields": [
+        "trades_tick",
+        "aggressor_side",
+        "quotes_l1",
+        "ohlcv"
+      ],
+      "resolutions": [
+        "tick"
+      ],
+      "coverage": [
+        "2015",
+        "2025"
+      ],
+      "validation": "not yet validated",
+      "source": "research_notes",
+      "research_usable": false
+    },
+    {
+      "id": "vix_futures",
+      "instrument": "context",
+      "fields": [
+        "vol_index"
+      ],
+      "resolutions": [
+        "5m",
+        "1d"
+      ],
+      "coverage": [
+        "2012-01-01",
+        "2025-12-31"
+      ],
+      "validation": "checked",
+      "source": "research_notes",
+      "research_usable": true,
+      "serves": [
+        "NQ",
+        "ES"
+      ]
+    },
+    {
+      "id": "qqq_options_eod",
+      "instrument": "context",
+      "fields": [
+        "options_eod_greeks",
+        "implied_volatility",
+        "options_open_interest",
+        "options_eod_quotes"
+      ],
+      "resolutions": [
+        "1d"
+      ],
+      "coverage": [
+        "2012-01-01",
+        "2025-12-31"
+      ],
+      "validation": "checked",
+      "caveat": "end-of-day values are usable the next trading day",
+      "source": "research_notes",
+      "research_usable": true,
+      "serves": [
+        "NQ"
+      ],
+      "underlying": "QQQ",
+      "availability_lag": "D+1"
+    },
+    {
+      "id": "btc_perp",
+      "instrument": "BTCUSDT_PERP",
+      "fields": [
+        "ohlcv",
+        "trades_tick",
+        "aggressor_side",
+        "funding_rate",
+        "open_interest"
+      ],
+      "resolutions": [
+        "tick",
+        "1m",
+        "8h"
+      ],
+      "coverage": [
+        "2020-01-01",
+        "present"
+      ],
+      "validation": "checked",
+      "source": "research_notes",
+      "research_usable": true
+    }
+  ],
+  "costs": {
+    "NQ": {
+      "round_turn_bps_per_leg": 1.3,
+      "note": "example figure: market orders including commission and slippage"
+    },
+    "ES": {
+      "round_turn_bps_per_leg": 1.3,
+      "note": "example figure"
+    },
+    "BTCUSDT_PERP": {
+      "round_turn_bps_taker": 10.0,
+      "round_turn_bps_maker": 4.0,
+      "note": "example exchange fee tiers"
+    }
+  },
+  "sample_locks": {
+    "futures": {
+      "research": [
+        "2012-01-01",
+        "2018-12-31"
+      ],
+      "hard_locked_oos": [
+        "2022-01-01",
+        null
+      ],
+      "source": "research_notes"
+    },
+    "crypto": {
+      "research": [
+        "2020-01-01",
+        "2023-12-31"
+      ],
+      "hard_locked_oos": [
+        "2025-01-01",
+        null
+      ],
+      "source": "research_notes"
+    },
+    "rule": "paper-scout never reads market data; locks are recorded so reviewers remember which periods are off limits."
+  },
+  "closed_mechanisms": [
+    {
+      "id": "opening_range_breakout",
+      "project": "futures",
+      "disposition": "DEAD",
+      "mechanism": "Opening-range breakout on NQ",
+      "keywords": [
+        "opening range breakout",
+        "opening-range breakout"
+      ],
+      "scope": "NQ 5m, research sample",
+      "source": "research_notes",
+      "market": "equity_index"
+    },
+    {
+      "id": "es_nq_pairs",
+      "project": "futures",
+      "disposition": "DEAD",
+      "mechanism": "NQ/ES cointegration pairs trading",
+      "keywords": [
+        "cointegration",
+        "pairs trading"
+      ],
+      "scope": "daily spread, research sample",
+      "source": "research_notes",
+      "market": "equity_index"
+    },
+    {
+      "id": "ts_momentum",
+      "project": "futures",
+      "disposition": "DEAD",
+      "mechanism": "Daily/monthly time-series momentum",
+      "keywords": [
+        "time series momentum",
+        "trend following"
+      ],
+      "scope": "NQ and ES, research sample",
+      "source": "research_notes",
+      "market": "equity_index"
+    },
+    {
+      "id": "es_nq_leadlag",
+      "project": "futures",
+      "disposition": "DEAD",
+      "mechanism": "ES/NQ intraday lead-lag",
+      "keywords": [
+        "lead-lag",
+        "lead lag"
+      ],
+      "scope": "1m bars, research sample",
+      "source": "research_notes",
+      "market": "equity_index"
+    },
+    {
+      "id": "dealer_gamma",
+      "project": "futures",
+      "disposition": "INCONCLUSIVE",
+      "mechanism": "Dealer gamma exposure (GEX) as an intraday signal",
+      "keywords": [
+        "gamma exposure",
+        "dealer gamma",
+        "gex"
+      ],
+      "scope": "QQQ EOD options, research sample",
+      "source": "research_notes",
+      "market": "equity_index"
+    },
+    {
+      "id": "btc_funding",
+      "project": "crypto",
+      "disposition": "IN_PROGRESS",
+      "mechanism": "Funding-rate extremes on BTC perps",
+      "keywords": [
+        "funding rate",
+        "perpetual basis"
+      ],
+      "scope": "8h funding, research sample",
+      "source": "research_notes",
+      "market": "crypto"
+    }
+  ],
+  "structural_constraints": [
+    {
+      "statement": "Signals that trade at most once a day need many years of untouched data to reach significance; prefer mechanisms with several independent trades per day.",
+      "source": "research_notes"
+    },
+    {
+      "statement": "An effect must clear roughly 2x measured round-turn cost before it is worth a full test.",
+      "source": "research_notes"
+    }
+  ],
+  "authorized_knowledge_only": [],
+  "routes": {
+    "candidate_for_review": "Compatible observations and plausible timing; no obvious overlap with closed work; still needs a written test plan",
+    "knowledge_only": "Useful mechanism or negative result, but no deployable claim",
+    "requires_data": "Needs fields/resolution/instruments not owned; missing items listed explicitly",
+    "overlaps_closed_work": "Mechanism appears already tested; state what would have to be genuinely different",
+    "insufficient_evidence": "Missing text, unsupported claim, unclear timing, or contradictory sources",
+    "irrelevant": "Wrong domain; reason retained for search-quality measurement"
+  },
+  "field_vocabulary": {
+    "ohlcv": "bar open/high/low/close/volume",
+    "trades_tick": "individual trades",
+    "aggressor_side": "buyer/seller-initiated flag",
+    "quotes_l1": "best bid/ask",
+    "order_book_l2": "depth / MBP / MBO",
+    "options_eod_greeks": "EOD per-contract delta/gamma",
+    "implied_volatility": "EOD per-contract IV",
+    "options_eod_quotes": "EOD bid/ask marks",
+    "options_open_interest": "EOD options open interest",
+    "options_signed_flow": "signed/customer options volume",
+    "options_intraday": "intraday options trades/quotes",
+    "vol_index": "VIX futures bars",
+    "funding_rate": "perp funding",
+    "open_interest": "perp/futures open interest",
+    "macro_surprises": "release surprise vs consensus"
+  },
+  "screen": {
+    "min_gross_bps": {
+      "single_leg": 2.7,
+      "pair": 6.2
+    },
+    "family_bar": {
+      "raw_p": 0.0125,
+      "holm_alpha": 0.05,
+      "min_trades": 300,
+      "min_dates": 200
+    },
+    "power_note": "ideas trading at most once a day rarely have enough independent observations to reach significance",
+    "source": "research_notes"
+  }
+}

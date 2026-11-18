@@ -1,0 +1,22 @@
+# secrets
+.env
+
+# generated output — CSVs, downloaded PDFs, logs (dirs are recreated at
+# runtime by config.py / output.py / fulltext.py / run_scout.sh)
+results/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# OS
+.DS_Store
+
+# local arXiv OAI index (rebuild with --sync-arxiv)
+data/
+
+# your own research profiles (see profiles/README.md)
+profiles/private/
